@@ -26,7 +26,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/plans/inventory").permitAll()
+            .requestMatchers("/api/plans/**").permitAll()
 
             .requestMatchers("/api/admin/plans/**")
                 .hasRole("ADMIN")
@@ -35,13 +35,14 @@ public class SecurityConfig {
                 .hasRole("ADMIN")
 
             .requestMatchers("/api/policy/enroll/**").hasAnyRole("AGENT","CUSTOMER")
-            .requestMatchers("/api/policy/users/renew/**").hasAnyRole("AGENT","CUSTOMER","ADMIN")
-            .requestMatchers("/api/policy/users/status/**").hasAnyRole("AGENT","ADMIN")
+            .requestMatchers("/api/policy/users/renew/**").hasAnyRole("AGENT","CUSTOMER")
+            .requestMatchers("/api/policy/users/status/**").hasAnyRole("AGENT","ADMIN","CUSTOMER")
 
 
             .requestMatchers("/api/policy/inventory/users/**")
                 .hasAnyRole("CUSTOMER","AGENT","ADMIN")
-
+            .requestMatchers("/api/policy/users/**")
+                .hasAnyRole("CUSTOMER","AGENT","ADMIN")
             .anyRequest().authenticated()
         );
 

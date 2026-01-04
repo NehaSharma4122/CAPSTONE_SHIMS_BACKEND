@@ -32,6 +32,17 @@ public class InsurancePlanController {
     public List<InsurancePlan> getPlans() {
         return repo.findAll();
     }
+    
+    @GetMapping("/plans/{planId}")
+    public InsurancePlan getPlanById(@PathVariable Long planId) {
+        return repo.findById(planId)
+                .orElseThrow(() -> new RuntimeException("Plan not found with id " + planId));
+    }
+    
+    @GetMapping("/plans/exists/{planId}")
+    public boolean doesPlanExist(@PathVariable Long planId) {
+        return service.exists(planId);
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/plans/add")

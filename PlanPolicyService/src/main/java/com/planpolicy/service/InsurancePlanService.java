@@ -108,4 +108,9 @@ public class InsurancePlanService {
             plan.setMaxCoverageAmount(plan.getCoverageLimitValue());
         }
     }
+    
+    public boolean exists(Long planId) {
+        return repo.existsById(planId);
+    }
+
 }

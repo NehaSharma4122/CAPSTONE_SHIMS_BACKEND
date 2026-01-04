@@ -3,6 +3,7 @@ package com.planpolicy.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,7 @@ public class PolicyController {
         return service.enrollPolicy(userId, planId);
     }
 
-    @PreAuthorize("hasAnyRole('CUSTOMER','AGENT','ADMIN')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','AGENT')")
     @PutMapping("/policy/users/renew/{userId}/{policyId}")
     public Policy renew(
             @PathVariable Long userId,
@@ -50,7 +51,7 @@ public class PolicyController {
         return service.renewPolicy(userId, policyId);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT','CUSTOMER')")
     @PutMapping("/policy/users/status/{userId}/{policyId}")
     public Policy suspend(
             @PathVariable Long userId,
@@ -79,6 +80,24 @@ public class PolicyController {
     public Policy getPolicyById(@PathVariable Long policyId) {
         return service.getPolicy(policyId);
     }
+    
+    @PreAuthorize("hasAnyRole('CUSTOMER','AGENT','ADMIN')")
+    @GetMapping("/policy/users/{userId}/{policyId}")
+    public Policy getUserPolicy(
+            @PathVariable Long userId,
+            @PathVariable Long policyId) {
+
+        Policy policy = service.getPolicy(policyId);
+
+        if (!policy.getUserId().equals(userId)) {
+            throw new AccessDeniedException(
+                "Policy does not belong to user " + userId
+            );
+        }
+
+        return policy;
+    }
+
 
 }
 

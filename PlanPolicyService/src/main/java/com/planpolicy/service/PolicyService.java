@@ -103,7 +103,8 @@ public class PolicyService {
 
     public Policy renewPolicy(Long userId, Long policyId) {
 
-        authorizeUserAccess(userId);
+        if (!hasRole("CUSTOMER") && !hasRole("AGENT"))
+            throw new AccessDeniedException("Only Admin/Agent can suspend policies");
 
         Policy policy = policyRepo.findById(policyId)
                 .orElseThrow(() -> new RuntimeException("Policy not found"));
@@ -119,8 +120,7 @@ public class PolicyService {
 
     public Policy suspendPolicy(Long userId, Long policyId) {
 
-        if (!hasRole("ADMIN") && !hasRole("AGENT"))
-            throw new AccessDeniedException("Only Admin/Agent can suspend policies");
+        authorizeUserAccess(userId);
 
         Policy policy = policyRepo.findById(policyId)
                 .orElseThrow(() -> new RuntimeException("Policy not found"));
