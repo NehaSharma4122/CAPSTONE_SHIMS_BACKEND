@@ -243,5 +243,28 @@ public class AuthController {
                 user.getRole()
         );
     }
+    
+    
+    @GetMapping("/user/userid/{email}")
+    public ResponseEntity<?> getUserIdByEmail(@PathVariable String email) {
+
+        User user = users.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "User not found with email: " + email
+                        )
+                );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "userId", user.getId(),
+                        "email", user.getEmail(),
+                        "username", user.getUsername(),
+                        "role", user.getRole()
+                )
+        );
+    }
+
 
 }

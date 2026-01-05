@@ -60,6 +60,7 @@ public class InsurancePlanController {
                 .orElseThrow();
 
         plan.setPlanName(updated.getPlanName());
+        plan.setDescription(updated.getDescription());
         plan.setPremiumAmount(updated.getPremiumAmount());
         plan.setCoverageLimitType(updated.getCoverageLimitType());
         plan.setCoverageLimitValue(updated.getCoverageLimitValue());
