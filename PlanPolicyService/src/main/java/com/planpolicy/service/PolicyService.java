@@ -83,6 +83,18 @@ public class PolicyService {
         
         ensureTargetUserIsCustomer(userId);
 
+        boolean alreadyEnrolled =
+                policyRepo.existsByUserIdAndPlanIdAndPolicyStatus(
+                        userId,
+                        planId,
+                        PolicyStatus.ACTIVE
+                );
+
+        if (alreadyEnrolled) {
+            throw new RuntimeException(
+                "User already has an active policy for this plan. Renewal is allowed, duplicate enrollment is not."
+            );
+        }
         InsurancePlan plan = planRepo.findById(planId)
                 .orElseThrow(() -> new RuntimeException("Plan not found"));
 
