@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.usermanager.client.AuthFeignClient;
 import com.usermanager.request.*;
+import com.usermanager.service.EmailService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final AuthFeignClient authClient;
+    private final EmailService emailService;
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/all")
@@ -27,6 +30,8 @@ public class UserController {
     @PostMapping("/agent/add")
     public UserResponse addAgent(@RequestBody CreateUserRequest req) {
         req.setRole(Role.ROLE_AGENT);
+        UserResponse created = authClient.createUser(req);
+        emailService.sendUserCreationEmail(req, created);
         return authClient.createUser(req);
     }
 
@@ -34,6 +39,8 @@ public class UserController {
     @PostMapping("/claimoff/add")
     public UserResponse addClaimsOfficer(@RequestBody CreateUserRequest req) {
         req.setRole(Role.ROLE_CLAIMS_OFFICER);
+        UserResponse created = authClient.createUser(req);
+        emailService.sendUserCreationEmail(req, created);
         return authClient.createUser(req);
     }
 
@@ -41,6 +48,8 @@ public class UserController {
     @PostMapping("/hospital/add")
     public UserResponse addHospital(@RequestBody CreateUserRequest req) {
         req.setRole(Role.ROLE_HOSPITAL);
+        UserResponse created = authClient.createUser(req);
+        emailService.sendUserCreationEmail(req, created);
         return authClient.createUser(req);
     }
 
@@ -61,7 +70,9 @@ public class UserController {
     public UserResponse updateRole(
             @PathVariable Long id,
             @RequestBody UpdateRoleRequest req) {
+        UserResponse updatedUser = authClient.updateRole(id, req.getRole());
 
+        emailService.sendRoleUpdateEmail(updatedUser, req.getRole());
         return authClient.updateRole(id, req.getRole());
     }
 }

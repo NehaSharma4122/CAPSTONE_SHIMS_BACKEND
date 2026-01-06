@@ -3,6 +3,7 @@ package com.claimmanager.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import com.claimmanager.client.AuthUserClient;
 import com.claimmanager.client.PolicyFeignClient;
 import com.claimmanager.entity.Claim;
 import com.claimmanager.entity.ClaimStatus;
@@ -10,6 +11,7 @@ import com.claimmanager.exception.ClaimNotFoundException;
 import com.claimmanager.exception.PolicyValidationException;
 import com.claimmanager.repository.ClaimRepository;
 import com.claimmanager.request.ClaimRequestDTO;
+import com.claimmanager.request.EmailDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +23,91 @@ public class ClaimServiceImpl implements ClaimService {
 
     private final ClaimRepository claimRepository;
     private final PolicyFeignClient policyClient;
+    private final EmailService emailService;
+    private final AuthUserClient authUserClient;
+    
+    private double calculateClaimAmount(Claim claim) {
+        return (claim.getOperationCost() != null ? claim.getOperationCost() : 0)
+             + (claim.getMedicineCost() != null ? claim.getMedicineCost() : 0)
+             + (claim.getPostOpsCost() != null ? claim.getPostOpsCost() : 0);
+    }
+
+    private void sendClaimStatusEmail(Claim claim) {
+
+    	var user = authUserClient.getUserById(claim.getUserId());
+
+        if (user == null || user.getEmail() == null) {
+            System.out.println("⚠ Unable to fetch user email for userId = " + claim.getUserId());
+            return;
+        }
+
+        String userEmail = user.getEmail();
+        String name = user.getName() != null ? user.getName() : "Customer";
+
+        switch (claim.getStatus()) {
+
+            case IN_REVIEW ->
+                    emailService.sendMail(
+                            EmailDetails.builder()
+                                    .to(userEmail)
+                                    .subject("Your Insurance Claim is Under Review")
+                                    .body(
+                                            "Dear Policy Holder,\n\n" +
+                                            "Your claim (ID: " + claim.getId() + ") is now under review.\n" +
+                                            "Our claims officer will check and update the status shortly.\n\n" +
+                                            "Thank you,\nSmart Health Insurance"
+                                    ).build()
+                    );
+
+            case APPROVED ->
+                    emailService.sendMail(
+                            EmailDetails.builder()
+                                    .to(userEmail)
+                                    .subject("Your Insurance Claim Has Been Approved")
+                                    .body(
+                                            "Great news!\n\n" +
+                                            "Your claim (ID: " + claim.getId() + ") has been APPROVED.\n" +
+                                            "The payout will be processed shortly.\n\n" +
+                                            "Thank you,\nSmart Health Insurance"
+                                    ).build()
+                    );
+
+            case REJECTED ->
+                    emailService.sendMail(
+                            EmailDetails.builder()
+                                    .to(userEmail)
+                                    .subject("Your Insurance Claim Has Been Rejected")
+                                    .body(
+                                            "We are sorry to inform you that your claim (ID: " + claim.getId() + ") " +
+                                            "has been REJECTED.\n\n" +
+                                            "For more details, please contact support or your insurance agent.\n\n" +
+                                            "Thank you,\nSmart Health Insurance"
+                                    ).build()
+                    );
+
+            case PAID -> {
+
+                double claimAmount = calculateClaimAmount(claim);
+
+                emailService.sendMail(
+                        EmailDetails.builder()
+                                .to(userEmail)
+                                .subject("🎉 Claim Settlement Successful — Amount Credited")
+                                .body(
+                                        "Congratulations!\n\n" +
+                                        "Your claim (ID: " + claim.getId() + ") has been successfully PAID.\n\n" +
+                                        "Total Claim Amount Credited: ₹ " + claimAmount + "\n\n" +
+                                        "Breakdown:\n" +
+                                        "• Operation Cost: ₹ " + claim.getOperationCost() + "\n" +
+                                        "• Medicine Cost: ₹ " + claim.getMedicineCost() + "\n" +
+                                        "• Post-Ops Cost: ₹ " + claim.getPostOpsCost() + "\n\n" +
+                                        "Thank you for trusting Smart Health Insurance.\n" +
+                                        "We wish you a speedy recovery."
+                                ).build()
+                );
+            }
+        }
+    }
 
     @Override
     public Claim submitClaimByCustomer(Long userId, Long policyId, ClaimRequestDTO req) {
@@ -79,8 +166,12 @@ public class ClaimServiceImpl implements ClaimService {
 
         claim.setStatus(status);
         claim.setLastUpdatedAt(LocalDateTime.now());
+        
+        claimRepository.save(claim);
 
-        return claimRepository.save(claim);
+        sendClaimStatusEmail(claim);
+
+        return claim;
     }
 
     @Override
