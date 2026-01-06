@@ -60,6 +60,15 @@ public class PolicyController {
         return service.suspendPolicy(userId, policyId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT','CUSTOMER')")
+    @PutMapping("/policy/users/status/activate/{userId}/{policyId}")
+    public Policy activate(
+            @PathVariable Long userId,
+            @PathVariable Long policyId) {
+
+        return service.activatePolicy(userId, policyId);
+    }
+    
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/policy/{policyId}")
     public ResponseEntity<String> deletePolicy(

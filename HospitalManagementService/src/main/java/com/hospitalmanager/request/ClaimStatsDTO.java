@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ClaimStatsDTO {
 
-    private Long claimId;
+    private Long id;
 
     private Long userId;
     private Long policyId;

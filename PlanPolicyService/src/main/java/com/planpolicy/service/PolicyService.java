@@ -129,6 +129,27 @@ public class PolicyService {
 
         return policyRepo.save(policy);
     }
+    
+    public Policy activatePolicy(Long userId, Long policyId) {
+
+        authorizeUserAccess(userId);
+
+        Policy policy = policyRepo.findById(policyId)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
+
+        if (policy.getPolicyStatus() != PolicyStatus.SUSPENDED) {
+            throw new RuntimeException(
+                "Only suspended policies can be activated. Current status: "
+                + policy.getPolicyStatus()
+            );
+        }
+
+        policy.setPolicyStatus(PolicyStatus.ACTIVE);
+
+
+        return policyRepo.save(policy);
+    }
+
 
     public Policy getPolicy(Long policyId) {
         return policyRepo.findById(policyId)
