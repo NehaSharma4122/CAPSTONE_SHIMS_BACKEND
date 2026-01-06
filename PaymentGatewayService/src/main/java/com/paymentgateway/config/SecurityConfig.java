@@ -1,4 +1,5 @@
-package com.planpolicy.config;
+package com.paymentgateway.config;
+
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,13 +9,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import com.planpolicy.jwt.JwtAuthFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.paymentgateway.jwt.JwtAuthFilter;
 
 import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity
-@RequiredArgsConstructor
 @Configuration
+@RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
@@ -26,33 +29,14 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/plans/**").permitAll()
 
-            .requestMatchers("/api/admin/plans/**")
-                .hasRole("ADMIN")
+            .requestMatchers("/api/payment/**").authenticated()
 
-            .requestMatchers("/api/admin/policy/**")
-                .hasRole("ADMIN")
-                
-            .requestMatchers("/api/user/policy/**").permitAll()
-                
-            .requestMatchers("/api/policy/enroll/**").hasAnyRole("AGENT","CUSTOMER")
-            .requestMatchers("/api/policy/users/renew/**").hasAnyRole("AGENT","CUSTOMER")
-            .requestMatchers("/api/policy/users/status/**").hasAnyRole("AGENT","ADMIN","CUSTOMER")
-
-            .requestMatchers("/api/policy/payment/**").permitAll()
-
-            
-            .requestMatchers("/api/policy/inventory/users/**")
-                .hasAnyRole("CUSTOMER","AGENT","ADMIN")
-            .requestMatchers("/api/policy/users/**")
-                .hasAnyRole("CUSTOMER","AGENT","ADMIN")
             .anyRequest().authenticated()
         );
 
-        http.addFilterBefore(jwtAuthFilter, AnonymousAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
-

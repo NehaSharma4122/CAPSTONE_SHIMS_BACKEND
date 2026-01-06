@@ -1,5 +1,5 @@
 package com.planpolicy.entity;
 
 public enum PolicyStatus {
-    ACTIVE, EXPIRED, SUSPENDED
+    PENDING_PAYMENT, ACTIVE, EXPIRED, SUSPENDED
 }

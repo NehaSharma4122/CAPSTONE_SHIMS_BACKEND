@@ -50,6 +50,17 @@ public class PolicyController {
 
         return service.renewPolicy(userId, policyId);
     }
+    
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT','CUSTOMER')")
+    @GetMapping("/policy/payment/amount/{policyId}")
+    public Double getPaymentAmount(@PathVariable Long policyId) {
+        return service.getPolicy(policyId).getPremiumPaid();
+    }
+
+    @PutMapping("/policy/payment/confirm/{policyId}")
+    public Policy confirmPayment(@PathVariable Long policyId) {
+        return service.activatePolicyAfterPayment(policyId);
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN','AGENT','CUSTOMER')")
     @PutMapping("/policy/users/status/{userId}/{policyId}")
@@ -106,7 +117,11 @@ public class PolicyController {
 
         return policy;
     }
-
+    
+    @GetMapping("/user/policy/details/{policyId}")
+    public Policy getPolicyForUser(@PathVariable Long policyId) {
+        return service.getPolicy(policyId);
+    }
 
 }
 

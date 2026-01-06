@@ -34,6 +34,6 @@ public class Policy {
     private Double premiumPaid;
 
     @Enumerated(EnumType.STRING)
-    private PolicyStatus policyStatus = PolicyStatus.ACTIVE;
+    private PolicyStatus policyStatus = PolicyStatus.PENDING_PAYMENT;
 }
 

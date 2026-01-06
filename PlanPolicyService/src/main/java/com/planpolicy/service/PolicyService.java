@@ -103,12 +103,12 @@ public class PolicyService {
         policy.setUserId(userId);
         policy.setPlan(plan);
 
-        policy.setStartDate(LocalDate.now());
-        policy.setExpiryDate(LocalDate.now().plusYears(1));
+        policy.setStartDate(null);
+        policy.setExpiryDate(null);
         policy.setRenewalCount(0);
 
         policy.setPremiumPaid(plan.getPremiumAmount());
-        policy.setPolicyStatus(PolicyStatus.ACTIVE);
+        policy.setPolicyStatus(PolicyStatus.PENDING_PAYMENT);
 
         return policyRepo.save(policy);
     }
@@ -116,16 +116,40 @@ public class PolicyService {
     public Policy renewPolicy(Long userId, Long policyId) {
 
         if (!hasRole("CUSTOMER") && !hasRole("AGENT"))
-            throw new AccessDeniedException("Only Admin/Agent can suspend policies");
+            throw new AccessDeniedException("Only Customer/Agent can suspend policies");
 
         Policy policy = policyRepo.findById(policyId)
                 .orElseThrow(() -> new RuntimeException("Policy not found"));
 
         if (policy.getPolicyStatus() == PolicyStatus.SUSPENDED)
             throw new RuntimeException("Suspended policy cannot be renewed");
+//
+         // policy.setExpiryDate(null);
+          policy.setPolicyStatus(PolicyStatus.PENDING_PAYMENT);
+          policy.setPremiumPaid(policy.getPlan().getPremiumAmount());
+        return policyRepo.save(policy);
+    }
 
-        policy.setExpiryDate(policy.getExpiryDate().plusYears(1));
-        policy.setRenewalCount(policy.getRenewalCount() + 1);
+    public Policy activatePolicyAfterPayment(Long policyId) {
+
+        Policy policy = policyRepo.findById(policyId)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
+
+        if (policy.getPolicyStatus() != PolicyStatus.PENDING_PAYMENT)
+            throw new RuntimeException("Policy is not awaiting payment");
+
+        // first-time enrollment
+        if (policy.getStartDate() == null) {
+            policy.setStartDate(LocalDate.now());
+            policy.setExpiryDate(LocalDate.now().plusYears(1));
+        }
+        else {
+            // renewal success
+            policy.setExpiryDate(policy.getExpiryDate().plusYears(1));
+            policy.setRenewalCount(policy.getRenewalCount() + 1);
+        }
+
+        policy.setPolicyStatus(PolicyStatus.ACTIVE);
 
         return policyRepo.save(policy);
     }
