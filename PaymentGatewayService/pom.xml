@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2025.1.0</spring-cloud.version>
+		<sonar.organization>nehasharma4122</sonar.organization>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -154,6 +155,11 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+			    <groupId>org.sonarsource.scanner.maven</groupId>
+			    <artifactId>sonar-maven-plugin</artifactId>
+			    <version>3.11.0.3922</version>
 			</plugin>
 		</plugins>
 	</build>

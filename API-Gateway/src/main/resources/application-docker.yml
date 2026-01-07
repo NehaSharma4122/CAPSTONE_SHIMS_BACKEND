@@ -1,0 +1,86 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: API-Gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+
+      default-filters:
+        - PreserveHostHeader
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins:
+              - "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+      routes:
+        - id: authentication-service
+          uri: lb://AUTHENTICATION-SERVICE
+          predicates:
+            - Path=/authentication-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: user-management-service
+          uri: lb://USERMANAGEMENTSERVICE
+          predicates:
+            - Path=/user-management-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: plan-policy-service
+          uri: lb://PLANPOLICYSERVICE
+          predicates:
+            - Path=/plan-policy-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: claim-service
+          uri: lb://CLAIMMANAGEMENTSERVICE
+          predicates:
+            - Path=/claim-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: hospital-service
+          uri: lb://HOSPITALMANAGEMENTSERVICE
+          predicates:
+            - Path=/hospital-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: payment-gateway-service
+          uri: lb://PAYMENTGATEWAYSERVICE
+          predicates:
+            - Path=/payment-gateway-service/**
+          filters:
+            - StripPrefix=1
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-server:8090/eureka/
+
+  instance:
+    prefer-ip-address: true

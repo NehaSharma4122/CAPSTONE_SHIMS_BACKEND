@@ -1,0 +1,184 @@
+services:
+
+  # ======================
+  # DATABASES
+  # ======================
+
+  mysql-auth:
+    image: mysql:8
+    container_name: mysql-auth
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shims-auth
+    networks:
+      - capstone-network
+
+  mysql-user:
+    image: mysql:8
+    container_name: mysql-user
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: usermanagementdb
+    networks:
+      - capstone-network
+
+  mysql-policy:
+    image: mysql:8
+    container_name: mysql-policy
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: plan_policy_db
+    networks:
+      - capstone-network
+
+  mysql-claims:
+    image: mysql:8
+    container_name: mysql-claims
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: claimservicedb
+    networks:
+      - capstone-network
+
+  mysql-hospital:
+    image: mysql:8
+    container_name: mysql-hospital
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hospitalmanagementdb
+    networks:
+      - capstone-network
+
+  mysql-payment:
+    image: mysql:8
+    container_name: mysql-payment
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: payment_gateway
+    networks:
+      - capstone-network
+
+  # ======================
+  # EUREKA SERVER
+  # ======================
+
+  eureka-server:
+    image: capstone-eureka-server
+    container_name: eureka-server
+    ports:
+      - "8090:8090"
+    networks:
+      - capstone-network
+
+  # ======================
+  # API GATEWAY
+  # ======================
+
+  api-gateway:
+    image: capstone-api-gateway
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    depends_on:
+      - eureka-server
+    networks:
+      - capstone-network
+
+  # ======================
+  # AUTHENTICATION SERVICE
+  # ======================
+
+  authentication-service:
+    image: capstone-authentication-service
+    container_name: authentication-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql-auth
+      - eureka-server
+    networks:
+      - capstone-network
+
+  # ======================
+  # USER MANAGEMENT SERVICE
+  # ======================
+
+  user-management-service:
+    image: capstone-user-management-service
+    container_name: user-management-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mysql-user
+      - eureka-server
+    networks:
+      - capstone-network
+
+  # ======================
+  # PLAN POLICY SERVICE
+  # ======================
+
+  plan-policy-service:
+    image: capstone-plan-policy-service
+    container_name: plan-policy-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql-policy
+      - eureka-server
+    networks:
+      - capstone-network
+
+  # ======================
+  # CLAIM MANAGEMENT SERVICE
+  # ======================
+
+  claim-management-service:
+    image: capstone-claim-management-service
+    container_name: claim-management-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mysql-claims
+      - eureka-server
+    networks:
+      - capstone-network
+
+  # ======================
+  # HOSPITAL MANAGEMENT SERVICE
+  # ======================
+
+  hospital-management-service:
+    image: capstone-hospital-management-service
+    container_name: hospital-management-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mysql-hospital
+      - eureka-server
+    networks:
+      - capstone-network
+
+  # ======================
+  # PAYMENT GATEWAY SERVICE
+  # ======================
+
+  payment-gateway-service:
+    image: capstone-payment-gateway-service
+    container_name: payment-gateway-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - mysql-payment
+      - eureka-server
+    networks:
+      - capstone-network
+
+
+# ======================
+# NETWORK
+# ======================
+
+networks:
+  capstone-network:
+    driver: bridge

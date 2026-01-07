@@ -1,0 +1,70 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: UserManagementService
+
+  datasource:
+    url: jdbc:mysql://mysql-user:3306/usermanagementdb?createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 5000
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: rmneha1234@gmail.com
+    password: uyjn bzii uczy mnnu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    org.springframework.cloud.openfeign: DEBUG
+    com.usermanager.client: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: ThisIsAStrongJwtSecretKeyWithAtLeast64CharactersLengthForHS512Algorithm
+  access:
+    expiry: 3600000
+  refresh:
+    expiry: 604800000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-server:8090/eureka/
+
+  instance:
+    prefer-ip-address: true

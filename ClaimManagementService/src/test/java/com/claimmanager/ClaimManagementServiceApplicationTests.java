@@ -10,6 +10,7 @@ class ClaimManagementServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+        ClaimManagementServiceApplication.main(new String[]{});
 	}
 
 }

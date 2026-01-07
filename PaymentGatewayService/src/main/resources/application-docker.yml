@@ -1,0 +1,40 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: PaymentGatewayService
+
+  datasource:
+    url: jdbc:mysql://mysql-payment:3306/payment_gateway?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  cloud:
+    openfeign:
+      enabled: true
+
+razorpay:
+  key:
+    id: rzp_test_S0LBUfSfKroGEG
+    secret: 1J8qVEDVotFIXvgTafDsbTGH
+
+planpolicy:
+  service:
+    url: http://policy-service:8082
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-server:8090/eureka/
+
+  instance:
+    prefer-ip-address: true

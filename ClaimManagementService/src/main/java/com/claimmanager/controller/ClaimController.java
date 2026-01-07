@@ -67,25 +67,25 @@ public class ClaimController {
     // ===== GET APIs =====
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('CLAIMS_OFFICER','CUSTOMER','HOSPITAL')")
+    @PreAuthorize("hasAnyRole('CLAIMS_OFFICER','CUSTOMER','HOSPITAL','ADMIN')")
     public List<Claim> getAllClaims() {
         return claimService.getAllClaims();
     }
 
     @GetMapping("/{claimId}")
-    @PreAuthorize("hasAnyRole('CLAIMS_OFFICER','CUSTOMER','HOSPITAL')")
+    @PreAuthorize("hasAnyRole('CLAIMS_OFFICER','CUSTOMER','HOSPITAL','ADMIN')")
     public Claim getClaim(@PathVariable Long claimId) {
         return claimService.getClaimById(claimId);
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('CLAIMS_OFFICER','CUSTOMER','HOSPITAL')")
+    @PreAuthorize("hasAnyRole('CLAIMS_OFFICER','CUSTOMER','HOSPITAL','ADMIN')")
     public List<Claim> getClaimsByUser(@PathVariable Long userId) {
         return claimService.getClaimsByUser(userId);
     }
 
     @GetMapping("/status/{status}/all")
-    @PreAuthorize("hasRole('CLAIMS_OFFICER')")
+    @PreAuthorize("hasAnyRole('CLAIMS_OFFICER','ADMIN')")
     public List<Claim> getClaimsByStatus(@PathVariable String status) {
     	try {
             ClaimStatus claimStatus =
