@@ -2,7 +2,7 @@ FROM eclipse-temurin:17-jre
 
 WORKDIR /payment-gateway-service
 
-COPY target/payment-gateway-service-0.0.1-SNAPSHOT.jar app.jar
+COPY target/PaymentGatewayService-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8086
 

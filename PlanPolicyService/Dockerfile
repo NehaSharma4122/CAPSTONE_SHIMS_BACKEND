@@ -2,7 +2,7 @@ FROM eclipse-temurin:17-jre
 
 WORKDIR /plan-policy-service
 
-COPY target/plan-policy-service-0.0.1-SNAPSHOT.jar app.jar
+COPY target/PlanPolicyService-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8082
 
