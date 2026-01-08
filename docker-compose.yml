@@ -63,7 +63,7 @@ services:
   # ======================
 
   eureka-server:
-    build: ./eureka-server
+    build: ./EurekaServer
     image: capstone-eureka-server
     container_name: eureka-server
     ports:
@@ -76,7 +76,7 @@ services:
   # ======================
 
   api-gateway:
-    build: ./api-gateway
+    build: ./API-Gateway
     image: capstone-api-gateway
     container_name: api-gateway
     ports:
@@ -91,7 +91,7 @@ services:
   # ======================
 
   authentication-service:
-    build: ./authentication-service
+    build: ./Authentication-Service
     image: capstone-authentication-service
     container_name: authentication-service
     ports:
@@ -107,7 +107,7 @@ services:
   # ======================
 
   user-management-service:
-    build: ./user-management-service
+    build: ./UserManagementService
     image: capstone-user-management-service
     container_name: user-management-service
     ports:
@@ -123,7 +123,7 @@ services:
   # ======================
 
   plan-policy-service:
-    build: ./plan-policy-service
+    build: ./PlanPolicyService
     image: capstone-plan-policy-service
     container_name: plan-policy-service
     ports:
@@ -139,7 +139,7 @@ services:
   # ======================
 
   claim-management-service:
-    build: ./claim-management-service
+    build: ./ClaimManagementService
     image: capstone-claim-management-service
     container_name: claim-management-service
     ports:
@@ -155,7 +155,7 @@ services:
   # ======================
 
   hospital-management-service:
-    build: ./hospital-management-service
+    build: ./HospitalManagementService
     image: capstone-hospital-management-service
     container_name: hospital-management-service
     ports:
@@ -171,7 +171,7 @@ services:
   # ======================
 
   payment-gateway-service:
-    build: ./payment-gateway-service
+    build: ./PaymentGatewayService
     image: capstone-payment-gateway-service
     container_name: payment-gateway-service
     ports:
