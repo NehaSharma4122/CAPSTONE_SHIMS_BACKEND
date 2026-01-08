@@ -5,6 +5,7 @@ import com.planpolicy.entity.*;
 import com.planpolicy.repository.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -232,5 +233,63 @@ class PolicyServiceTest {
         service.deletePolicy(9L);
 
         verify(policyRepo).deleteById(9L);
+    }
+    
+    @Test
+    void service_Coverage_PrivateHelpersAndErrors() {
+        // Arrange: Mock the repository to return a valid policy for ID 7L
+        Policy existingPolicy = new Policy();
+        existingPolicy.setUserId(5L);
+        when(policyRepo.findById(7L)).thenReturn(Optional.of(existingPolicy));
+        when(policyRepo.save(any())).thenReturn(existingPolicy);
+
+        // 1. Test ADMIN bypass in authorizeUserAccess
+        mockUser(1L, "ADMIN");
+        assertDoesNotThrow(() -> service.suspendPolicy(5L, 7L));
+
+        // 2. Test AccessDenied branch
+        // Mock user with ID 10 and NO roles that match ADMIN/AGENT/CUSTOMER
+        mockUser(10L, "GUEST"); 
+        assertThrows(AccessDeniedException.class, () -> service.suspendPolicy(5L, 7L));
+    }
+
+    @Test
+    void activatePolicy_PaymentError_NotAwaiting() {
+        Policy p = new Policy();
+        p.setPolicyStatus(PolicyStatus.ACTIVE); // Not PENDING_PAYMENT
+        when(policyRepo.findById(1L)).thenReturn(Optional.of(p));
+        
+        assertThrows(RuntimeException.class, () -> service.activatePolicyAfterPayment(1L));
+    }
+    
+    @Test
+    void testLambdaErrorBranches() {
+        when(policyRepo.findById(999L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> service.getPolicy(999L));
+
+        when(planRepo.findById(888L)).thenReturn(Optional.empty());
+    }
+    
+    @Test
+    void service_Coverage_OwnPolicyAccess() {
+        // 1. Test user accessing their OWN policy (covers authUserId.equals(userId))
+        mockUser(5L, "CUSTOMER");
+        Policy ownPolicy = new Policy();
+        ownPolicy.setUserId(5L);
+        when(policyRepo.findById(10L)).thenReturn(Optional.of(ownPolicy));
+        when(policyRepo.save(any())).thenReturn(ownPolicy);
+
+        assertDoesNotThrow(() -> service.suspendPolicy(5L, 10L));
+
+        // 2. Test getAuthUserRole findFirst branch
+        // This is covered by any method calling hasRole() or getAuthUserRole()
+    }
+
+    @Test
+    void ensureTargetUserIsCustomer_UserNotFound_ThrowsException() {
+        mockUser(1L, "ADMIN");
+        when(authUserClient.getUserById(anyLong())).thenReturn(null);
+        
+        assertThrows(RuntimeException.class, () -> service.enrollPolicy(99L, 1L));
     }
 }
