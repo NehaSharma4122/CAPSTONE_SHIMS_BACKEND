@@ -4,69 +4,15 @@ services:
   # DATABASES
   # ======================
 
-  mysql-auth:
+  mysql:
     image: mysql:8
-    container_name: mysql-auth
+    container_name: mysql-all
     ports:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: shims-auth
-    networks:
-      - capstone-network
-
-  mysql-user:
-    image: mysql:8
-    container_name: mysql-user
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: usermanagementdb
-    networks:
-      - capstone-network
-
-  mysql-policy:
-    image: mysql:8
-    container_name: mysql-policy
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: plan_policy_db
-    networks:
-      - capstone-network
-
-  mysql-claims:
-    image: mysql:8
-    container_name: mysql-claims
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: claimservicedb
-    networks:
-      - capstone-network
-
-  mysql-hospital:
-    image: mysql:8
-    container_name: mysql-hospital
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: hospitalmanagementdb
-    networks:
-      - capstone-network
-
-  mysql-payment:
-    image: mysql:8
-    container_name: mysql-payment
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: payment_gateway
+    volumes:
+      - mysql-data:/var/lib/mysql
     networks:
       - capstone-network
 
