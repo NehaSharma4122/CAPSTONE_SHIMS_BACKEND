@@ -6,7 +6,7 @@ spring:
     name: Authentication-Service
 
   datasource:
-    url: jdbc:mysql://mysql-auth:3306/shims-auth?createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql:3306/shims-auth?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver

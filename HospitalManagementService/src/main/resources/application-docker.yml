@@ -6,7 +6,7 @@ spring:
     name: HospitalManagementService
 
   datasource:
-    url: jdbc:mysql://mysql-hospital:3306/hospitalmanagementdb?createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql:3306/hospitalmanagementdb?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver

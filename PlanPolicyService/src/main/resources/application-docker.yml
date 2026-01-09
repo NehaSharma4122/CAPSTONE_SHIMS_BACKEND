@@ -6,7 +6,7 @@ spring:
     name: PlanPolicyService
 
   datasource:
-    url: jdbc:mysql://mysql-policy:3306/plan_policy_db?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql:3306/plan_policy_db?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver

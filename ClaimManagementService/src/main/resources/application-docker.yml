@@ -6,7 +6,7 @@ spring:
     name: ClaimManagementService
 
   datasource:
-    url: jdbc:mysql://mysql-claims:3306/claimservicedb?createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql:3306/claimservicedb?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
