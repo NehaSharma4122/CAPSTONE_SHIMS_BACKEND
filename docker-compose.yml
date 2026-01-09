@@ -55,7 +55,7 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - mysql-auth
+      - mysql
       - eureka-server
     networks:
       - capstone-network
@@ -71,7 +71,7 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      - mysql-user
+      - mysql
       - eureka-server
     networks:
       - capstone-network
@@ -87,7 +87,7 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - mysql-policy
+      - mysql
       - eureka-server
     networks:
       - capstone-network
@@ -103,7 +103,7 @@ services:
     ports:
       - "8084:8084"
     depends_on:
-      - mysql-claims
+      - mysql
       - eureka-server
     networks:
       - capstone-network
@@ -119,7 +119,7 @@ services:
     ports:
       - "8085:8085"
     depends_on:
-      - mysql-hospital
+      - mysql
       - eureka-server
     networks:
       - capstone-network
@@ -135,7 +135,7 @@ services:
     ports:
       - "8086:8086"
     depends_on:
-      - mysql-payment
+      - mysql
       - eureka-server
     networks:
       - capstone-network
