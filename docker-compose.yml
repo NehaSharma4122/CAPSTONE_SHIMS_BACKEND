@@ -144,6 +144,8 @@ services:
 # ======================
 # NETWORK
 # ======================
+volumes:
+  mysql-data:
 
 networks:
   capstone-network:
